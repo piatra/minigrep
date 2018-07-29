@@ -22,7 +22,7 @@ fn main() {
 
     let config = Config::new(&args).unwrap_or_else(|err| {
         println!("Problem parsing arguments: {}", err);
-        process.exit(1);
+        process::exit(1);
     });
 
     println!("Searching for {}", config.query);
@@ -32,6 +32,6 @@ fn main() {
     let mut contents = String::new();
     f.read_to_string(&mut contents)
         .expect("Something went wrong reading the file");
-        
+
     println!("With text:\n{}", contents);
 }
