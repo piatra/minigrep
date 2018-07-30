@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::error::Error;
+use std::env;
 
 #[cfg(test)]
 mod test {
@@ -63,7 +64,8 @@ Trust me.";
 
 pub struct Config {
     query: String,
-    filename: String
+    filename: String,
+    case_sensitive: bool,
 }
 
 impl Config {
@@ -71,7 +73,14 @@ impl Config {
         if args.len() < 3 {
             return Err("Not enough arguments");
         }
-        Ok(Config { query: args[1].clone(), filename: args[2].clone() })
+
+        let case_sensitive = env::var("CASE_INSENSITIVE").unwrap();
+
+        Ok(Config {
+            query: args[1].clone(),
+            filename: args[2].clone(),
+            case_sensitive: case_sensitive == "1"
+        })
     }
 }
 
@@ -80,7 +89,13 @@ pub fn run(config: Config) -> Result<(), Box<Error>> {
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
-    for line in search(&config.query, &contents) {
+    let results = if config.case_sensitive {
+        search(&config.query, &contents)
+    } else {
+        search_case_insensitive(&config.query, &contents)
+    };
+
+    for line in results {
         println!("{}", line);
     }
 
