@@ -22,7 +22,6 @@ mod test {
         let args: Vec<String> = vec!["minigrep", "foo", "poem.txt"].into_iter().map(|s| {
             s.into()
         }).collect();
-        println!("debug {:?}", args);
         let config = Config::new(&args).unwrap();
         if let Err(_) = run(config) {
             assert!(false);
@@ -74,12 +73,12 @@ impl Config {
             return Err("Not enough arguments");
         }
 
-        let case_sensitive = env::var("CASE_INSENSITIVE").unwrap();
+        let case_sensitive = env::var("CASE_SENSITIVE").is_ok();
 
         Ok(Config {
             query: args[1].clone(),
             filename: args[2].clone(),
-            case_sensitive: case_sensitive == "1"
+            case_sensitive
         })
     }
 }
